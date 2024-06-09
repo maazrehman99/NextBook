@@ -1,0 +1,8 @@
+# Ignore Python bytecode files
+__pycache__/
+
+# Ignore IPython notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore Node.js modules in the frontend folder
+frontend/node_modules/
