@@ -61,7 +61,7 @@ const Product = ({ book }) => {
           <span style={{ fontWeight: "bold" }}>{book[1]}</span> {/* Author in bold */}
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
-          Rating: {book[3].toFixed(2)} {/* Rating formatted with two decimal points */}
+          Rating: {book[3]} {/* Rating formatted with two decimal points */}
         </Typography>
         <div> {/* Render stars on a new line */}
           {renderStars(book[3])}
