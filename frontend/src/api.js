@@ -7,7 +7,7 @@ const DEVELOPMENT_BACKEND_URL = "http://localhost:5000"; // Example, replace wit
 const PRODUCTION_BACKEND_URL = process.env.REACT_APP_PROD_BACKEND_URL;
 
 const getBackendUrl = () => {
-  if (process.env.REACT_APP_ENV === "Production") {
+  if (process.env.REACT_APP_ENV === "production") {
     return PRODUCTION_BACKEND_URL;
   } else {
     return DEVELOPMENT_BACKEND_URL;
