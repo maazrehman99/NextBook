@@ -93,7 +93,7 @@ const Products = ({ onAddToCart }) => {
 </h3>
 <p className={classes.contentParagraph}>
   {searchResults.length > 0 ? 
-    <span>These are top 5 best recommendations</span>  :
+    <span>These are top 4 best recommendations</span>  :
     <span>These are the top 30 books based on ratings by good readers</span>
   }
 </p>
