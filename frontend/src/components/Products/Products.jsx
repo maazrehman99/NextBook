@@ -1,3 +1,4 @@
+// Products.js
 import React, { useState, useRef, useEffect } from "react";
 import { Grid, InputAdornment, Input } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
@@ -5,7 +6,7 @@ import Product from "./Product/Product.js";
 import useStyles from "./styles";
 import logo1 from "../../assets/Bookshop.gif";
 import scrollImg from "../../assets/scroll.gif";
-import axios from 'axios';
+import { fetchTopBooks, searchRecommendations}  from '../../api.js'
 
 const Products = ({ onAddToCart }) => {
   const classes = useStyles();
@@ -16,9 +17,9 @@ const Products = ({ onAddToCart }) => {
 
   useEffect(() => {
     // Fetch top books from the API when component mounts
-    axios.get("http://127.0.0.1:5000/top_books")
-      .then(response => {
-        setTopBooks(response.data);
+    fetchTopBooks()
+      .then(data => {
+        setTopBooks(data);
       })
       .catch(error => {
         console.error("Error fetching top books:", error);
@@ -33,9 +34,9 @@ const Products = ({ onAddToCart }) => {
   const handleSearch = () => {
     // Hit the recommend API when user presses enter or clicks search icon
     if (searchTerm !== "") {
-      axios.get(`http://127.0.0.1:5000/recommend?book=${searchTerm}`)
-        .then(response => {
-          setSearchResults(response.data);
+      searchRecommendations(searchTerm)
+        .then(data => {
+          setSearchResults(data);
         })
         .catch(error => {
           console.error("Error fetching search results:", error);
@@ -85,20 +86,18 @@ const Products = ({ onAddToCart }) => {
       </div>
 
       <div>
-      <h3 className={classes.contentHeader}>
-  {searchResults.length > 0 ? 
-    <span>Recommendations For <span style={{ color: "#f1361d" }}>{searchTerm}</span></span>  :
-    <span>Top <span style={{ color: "#f1361d" }}>Books</span></span>
-  }
-</h3>
-<p className={classes.contentParagraph}>
-  {searchResults.length > 0 ? 
-    <span>These are top 4 best recommendations</span>  :
-    <span>These are the top 30 books based on ratings by good readers</span>
-  }
-</p>
-
-
+        <h3 className={classes.contentHeader}>
+          {searchResults.length > 0 ? 
+            <span>Recommendations For <span style={{ color: "#f1361d" }}>{searchTerm}</span></span>  :
+            <span>Top <span style={{ color: "#f1361d" }}>Books</span></span>
+          }
+        </h3>
+        <p className={classes.contentParagraph}>
+          {searchResults.length > 0 ? 
+            <span>These are top 4 best recommendations</span>  :
+            <span>These are the top 30 books based on ratings by good readers</span>
+          }
+        </p>
 
         <Grid
           className={classes.contentFeatured}

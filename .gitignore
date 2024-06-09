@@ -6,3 +6,6 @@ __pycache__/
 
 # Ignore Node.js modules in the frontend folder
 frontend/node_modules/
+
+.env
+frontend/.env
