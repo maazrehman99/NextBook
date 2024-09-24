@@ -1,10 +1,24 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.metrics.pairwise import cosine_similarity
 from difflib import get_close_matches
 
+# Get the current directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+csv_file_path = os.path.join(current_dir, 'final_model_data.csv')
+
 # Load the data
-df = pd.read_csv('final_model_data.csv')
+try:
+    df = pd.read_csv(csv_file_path)
+except FileNotFoundError:
+    print("The file was not found. Please check the file name and path.")
+except pd.errors.EmptyDataError:
+    print("The file is empty.")
+except pd.errors.ParserError:
+    print("Error parsing the file. Please check the file format.")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
 
 # Perform the group by operation and count the Book-Rating values for each User-ID
 x = df.groupby('User-ID')['Book-Rating'].count()
@@ -61,7 +75,6 @@ def recommend(book_name):
     
     return data
 
-
 def get_top_books(n=30):
     # Get the average rating for each book
     avg_rating = df.groupby('Book-Title')['Book-Rating'].mean()
@@ -85,7 +98,7 @@ def get_top_books(n=30):
             temp_df['Book-Title'].values[0],
             temp_df['Book-Author'].values[0],
             temp_df['Image-URL-L'].values[0],
-             round(top_books.loc[title, 'avg_rating'], 2)
+            round(top_books.loc[title, 'avg_rating'], 2)
         ]
         data.append(item)
     
