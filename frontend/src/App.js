@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { CssBaseline } from "@material-ui/core";
-import { commerce } from "./lib/commerce";
 import Products from "./components/Products/Products";
 import Navbar from "./components/Navbar/Navbar";
 import Cart from "./components/Cart/Cart";
@@ -24,101 +23,49 @@ const App = () => {
   const [fictionProducts, setFictionProducts] = useState([]);
   const [bioProducts, setBioProducts] = useState([]);
   const [featureProducts, setFeatureProducts] = useState([]);
-  const [cart, setCart] = useState({});
+  const [cart, setCart] = useState([]);
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Example static product data
+  const mockProducts = [
+    { id: 1, name: "Manga Book 1", category: "manga" },
+    { id: 2, name: "Fiction Book 1", category: "fiction" },
+    { id: 3, name: "Biography Book 1", category: "biography" },
+  ];
+
   const fetchProducts = async () => {
-    const { data } = await commerce.products.list();
-
-    setProducts(data);
+    // Mock fetching products
+    setProducts(mockProducts);
   };
 
-  const fetchMangaProducts = async () => {
-    const { data } = await commerce.products.list({
-      category_slug: ["manga"],
-    });
-
-    setMangaProducts(data);
+  const fetchMangaProducts = () => {
+    setMangaProducts(mockProducts.filter(product => product.category === "manga"));
   };
 
-  const fetchFeatureProducts = async () => {
-    const { data } = await commerce.products.list({
-      category_slug: ["featured"],
-    });
-
-    setFeatureProducts(data);
+  const fetchFictionProducts = () => {
+    setFictionProducts(mockProducts.filter(product => product.category === "fiction"));
   };
 
-  const fetchFictionProducts = async () => {
-    const { data } = await commerce.products.list({
-      category_slug: ["fiction"],
-    });
-
-    setFictionProducts(data);
+  const fetchBioProducts = () => {
+    setBioProducts(mockProducts.filter(product => product.category === "biography"));
   };
 
-  const fetchBioProducts = async () => {
-    const { data } = await commerce.products.list({
-      category_slug: ["biography"],
-    });
-
-    setBioProducts(data);
+  const handleAddToCart = (productId) => {
+    const product = products.find(p => p.id === productId);
+    setCart([...cart, product]);
   };
 
-  const fetchCart = async () => {
-    setCart(await commerce.cart.retrieve());
+  const handleRemoveFromCart = (productId) => {
+    setCart(cart.filter(item => item.id !== productId));
   };
 
-  const handleAddToCart = async (productId, quantity) => {
-    const item = await commerce.cart.add(productId, quantity);
-
-    setCart(item.cart);
-  };
-
-  const handleUpdateCartQty = async (lineItemId, quantity) => {
-    const response = await commerce.cart.update(lineItemId, { quantity });
-
-    setCart(response.cart);
-  };
-
-  const handleRemoveFromCart = async (lineItemId) => {
-    const response = await commerce.cart.remove(lineItemId);
-
-    setCart(response.cart);
-  };
-
-  const handleEmptyCart = async () => {
-    const response = await commerce.cart.empty();
-
-    setCart(response.cart);
-  };
-
-  const refreshCart = async () => {
-    const newCart = await commerce.cart.refresh();
-
-    setCart(newCart);
-  };
-
-  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
-    try {
-      const incomingOrder = await commerce.checkout.capture(
-        checkoutTokenId,
-        newOrder
-      );
-
-      setOrder(incomingOrder);
-
-      refreshCart();
-    } catch (error) {
-      setErrorMessage(error.data.error.message);
-    }
+  const handleEmptyCart = () => {
+    setCart([]);
   };
 
   useEffect(() => {
     fetchProducts();
-    fetchFeatureProducts();
-    fetchCart();
     fetchMangaProducts();
     fetchFictionProducts();
     fetchBioProducts();
@@ -134,7 +81,7 @@ const App = () => {
             <div style={{ display: "flex" }}>
               <CssBaseline />
               <Navbar
-                totalItems={cart.total_items}
+                totalItems={cart.length}
                 handleDrawerToggle={handleDrawerToggle}
               />
               <Switch>
@@ -143,24 +90,17 @@ const App = () => {
                     products={products}
                     featureProducts={featureProducts}
                     onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
                   />
                 </Route>
                 <Route exact path="/cart">
                   <Cart
                     cart={cart}
-                    onUpdateCartQty={handleUpdateCartQty}
                     onRemoveFromCart={handleRemoveFromCart}
                     onEmptyCart={handleEmptyCart}
                   />
                 </Route>
                 <Route path="/checkout" exact>
-                  <Checkout
-                    cart={cart}
-                    order={order}
-                    onCaptureCheckout={handleCaptureCheckout}
-                    error={errorMessage}
-                  />
+                  <Checkout cart={cart} order={order} />
                 </Route>
                 <Route path="/product-view/:id" exact>
                   <ProductView />
@@ -169,21 +109,18 @@ const App = () => {
                   <Manga
                     mangaProducts={mangaProducts}
                     onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
                   />
                 </Route>
                 <Route path="/fiction" exact>
                   <Fiction
                     fictionProducts={fictionProducts}
                     onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
                   />
                 </Route>
                 <Route path="/biography" exact>
                   <Biography
                     bioProducts={bioProducts}
                     onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
                   />
                 </Route>
               </Switch>

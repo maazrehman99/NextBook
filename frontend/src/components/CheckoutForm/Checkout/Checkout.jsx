@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CssBaseline, Paper, Stepper, Step, StepLabel, Typography, CircularProgress, Divider, Button } from '@material-ui/core';
 import { Link, useHistory } from 'react-router-dom';
-
-import { commerce } from '../../../lib/commerce';
 import AddressForm from '../AddressForm';
 import PaymentForm from '../PaymentForm';
 import useStyles from './styles';
@@ -10,9 +8,9 @@ import useStyles from './styles';
 const steps = ['Shipping address', 'Payment details'];
 
 const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
-  const [checkoutToken, setCheckoutToken] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [shippingData, setShippingData] = useState({});
+  const [checkoutToken, setCheckoutToken] = useState(null); // You can replace this with other token handling logic if needed
   const classes = useStyles();
   const history = useHistory();
 
@@ -21,41 +19,34 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
   useEffect(() => {
     if (cart.id) {
-      const generateToken = async () => {
-        try {
-          const token = await commerce.checkout.generateToken(cart.id, { type: 'cart' });
-
-          setCheckoutToken(token);
-        } catch {
-          if (activeStep !== steps.length) history.push('/');
-        }
-      };
-
-      generateToken();
+      // Replace this with your logic to handle checkout token
+      const token = { id: cart.id }; // Mocking token generation, replace with your logic
+      setCheckoutToken(token);
     }
   }, [cart]);
 
-  const test = (data) => {
+  const handleShippingData = (data) => {
     setShippingData(data);
-
     nextStep();
   };
 
-  let Confirmation = () => (order.customer ? (
-    <>
-      <div>
-        <Typography variant="h5">Thank you for your purchase, {order.customer.firstname} {order.customer.lastname}!</Typography>
-        <Divider className={classes.divider} />
-        <Typography variant="subtitle2">Order ref: {order.customer_reference}</Typography>
+  let Confirmation = () => (
+    order.customer ? (
+      <>
+        <div>
+          <Typography variant="h5">Thank you for your purchase, {order.customer.firstname} {order.customer.lastname}!</Typography>
+          <Divider className={classes.divider} />
+          <Typography variant="subtitle2">Order ref: {order.customer_reference}</Typography>
+        </div>
+        <br />
+        <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
+      </>
+    ) : (
+      <div className={classes.spinner}>
+        <CircularProgress />
       </div>
-      <br />
-      <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
-    </>
-  ) : (
-    <div className={classes.spinner}>
-      <CircularProgress />
-    </div>
-  ));
+    )
+  );
 
   if (error) {
     Confirmation = () => (
@@ -68,8 +59,8 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
   }
 
   const Form = () => (activeStep === 0
-    ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
-    : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />);
+    ? <AddressForm nextStep={nextStep} setShippingData={setShippingData} test={handleShippingData} />
+    : <PaymentForm nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} />);
 
   return (
     <>

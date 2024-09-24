@@ -1,33 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Grid, Button, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
-import { commerce } from "../../lib/commerce";
-import { useState, useEffect } from "react";
 import "./style.css";
 
+// Function to handle dangerously set HTML markup
 const createMarkup = (text) => {
   return { __html: text };
 };
 
 const ProductView = () => {
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState({
+    name: "Sample Product",
+    description: "This is a <strong>sample product</strong> description.",
+    price: "$100",
+    src: "https://via.placeholder.com/300" // Placeholder image
+  });
 
-  const fetchProduct = async (id) => {
-    const response = await commerce.products.retrieve(id);
-    console.log({ response });
-    const { name, price, media, quantity, description } = response;
-    setProduct({
-      name,
-      quantity,
-      description,
-      src: media.source,
-      price: price.formatted_with_symbol,
-    });
-  };
-
+  // You can replace this useEffect with an API call to fetch actual product data
   useEffect(() => {
-    const id = window.location.pathname.split("/");
-    fetchProduct(id[2]);
+    // Mock fetch or API logic for product data
+    const fetchProduct = async () => {
+      // Simulate fetching product data
+      const productData = {
+        name: "Sample Product",
+        description: "This is a <strong>sample product</strong> description.",
+        price: "$100",
+        src: "https://via.placeholder.com/300"
+      };
+      setProduct(productData);
+    };
+
+    fetchProduct();
   }, []);
 
   return (
@@ -41,7 +44,7 @@ const ProductView = () => {
             <b>{product.name}</b>
           </Typography>
           <Typography
-            variant="p"
+            variant="body1"
             dangerouslySetInnerHTML={createMarkup(product.description)}
           />
           <Typography variant="h3" color="secondary">
