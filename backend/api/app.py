@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from recommendation import recommend, get_top_books  
+from recommendation import recommend, get_top_books
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app)
 
 @app.route('/recommend', methods=['GET'])
 def get_recommendations():
@@ -20,5 +20,6 @@ def top_books():
     top_books_list = get_top_books(n)
     return jsonify(top_books_list)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Entry point for Vercel
+if __name__ == "__main__":
+    app.run()
